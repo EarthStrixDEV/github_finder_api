@@ -7,6 +7,7 @@ const Home = () => {
   const [searchRepo ,setSearchRepo] = useState<[]>([])
   const [username ,setUsername] = useState<string>("")
   const [category ,SetCategory] = useState<string>("username")
+  const [categoryComponent ,SetCategoryComponent] = useState<boolean | null>(null)
 
   const handleSubmitUsername = async(event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -20,6 +21,7 @@ const Home = () => {
         })
         const data_ : any = await res_username.json()
         setSearchRepo(data_.items)
+        SetCategoryComponent(true)
         break;
       case "repository":
         const res = await fetch(`https://api.github.com/search/repositories?q=${username}`,{
@@ -29,6 +31,7 @@ const Home = () => {
         })
         const data: any = await res.json()
         setSearchRepo(data.items)
+        SetCategoryComponent(false)
         break;
       default:
         break;
@@ -46,7 +49,7 @@ const Home = () => {
               <input type="text" placeholder='Push username or repository here' onChange={(event: React.ChangeEvent<HTMLInputElement>) => setUsername(event.target.value)} name="repository" id="" className="w-96 bg-slate-100 p-2 mx-2 text-lg font-normal outline-none shadow-sm shadow-gray-400" />
           </label>
           <label htmlFor="">
-            <select onChange={(event) => SetCategory(event.target.value)} name="" id="" className='p-2 mx-2 text-lg font-semibold shadow-sm shadow-gray-400 bg-slate-100 outline-none cursor-pointer'>
+            <select onChange={(event) => SetCategory(event.target.value)} value={category} name="" id="" className='p-2 mx-2 text-lg font-semibold shadow-sm shadow-gray-400 bg-slate-100 outline-none cursor-pointer'>
               <option value="username">Username</option>
               <option value="repository">Repository</option>
             </select>
@@ -57,7 +60,7 @@ const Home = () => {
         </form>
       </div>
       {
-        category === "username" ?
+        categoryComponent ?
         <UserWithRepo searchRepo={searchRepo} />
         :
         <Repo searchRepo={searchRepo} />
